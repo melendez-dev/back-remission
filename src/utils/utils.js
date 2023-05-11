@@ -3,6 +3,7 @@ const connectionDB = {
     user: "legacyte_root",
     password: "LegacyTech6x3!",
     database: "legacyte_remission",
+    port: 3306 
 };
 
 const sucessResponse = (res, data, message = "") => {
@@ -33,10 +34,10 @@ const sucessResponse = (res, data, message = "") => {
 }
 
 const errorReponse = (res, codeStatus, message = "") => {
-    res.status(codeStatus).json({
+    res.json({
         message,
         data: [],
-    })
+    }).status(codeStatus)
 }
 
 module.exports = {
