@@ -6,17 +6,17 @@ const cors = require('cors');
 const PORT = 3001;
 
 // import routers
-const loginRouter = require('./src/router/login.js');
-const uploadRouter = require('./src/router/upload.js');
-const usersRouter = require('./src/router/users.js');
-const productsRouter = require('./src/router/products.js');
-const remissionRouter = require('./src/router/remission.js');
-const pdfRouter = require('./src/router/pdf.js');
-const boxRouter = require('./src/router/box.js');
-const boxMovementRouter = require('./src/router/box_movement.js');
+// const loginRouter = require('./src/router/login.js');
+// const uploadRouter = require('./src/router/upload.js');
+// const usersRouter = require('./src/router/users.js');
+// const productsRouter = require('./src/router/products.js');
+// const remissionRouter = require('./src/router/remission.js');
+// const pdfRouter = require('./src/router/pdf.js');
+// const boxRouter = require('./src/router/box.js');
+// const boxMovementRouter = require('./src/router/box_movement.js');
 
 // import middleware
-const middlewareHeaders = require('./src/middlewares/headers.js');
+// const middlewareHeaders = require('./src/middlewares/headers.js');
 
 // create app
 const app = express();
