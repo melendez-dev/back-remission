@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const connectionDB = {
     host: process.env.DB_HOST,
     user: process.env.DB_HOST_USER,
