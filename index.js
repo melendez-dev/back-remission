@@ -11,7 +11,7 @@ const loginRouter = require('./src/router/login');
 const usersRouter = require('./src/router/users');
 const productsRouter = require('./src/router/products');
 const remissionRouter = require('./src/router/remission');
-//const pdfRouter = require('./src/router/pdf.js');
+const pdfRouter = require('./src/router/pdf');
 const boxRouter = require('./src/router/box');
 const boxMovementRouter = require('./src/router/box_movement');
 
@@ -41,7 +41,7 @@ app.use('/login', loginRouter);
 app.use('/users', usersRouter);
 app.use('/products', productsRouter)
 app.use('/remissions', remissionRouter)
-//app.use('/pdf', pdfRouter)
+app.use('/pdf', pdfRouter)
 app.use('/box', boxRouter)
 app.use('/box_movement', boxMovementRouter)
 
