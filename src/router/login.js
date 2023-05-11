@@ -9,7 +9,7 @@ const loginRouter = express.Router();
 loginRouter.post("/", async (req, res) => {
   try {
     const { body } = req;
-    if (!body.hasOwnProperty("usernmae")|| !body.hasOwnProperty("password")) {
+    if (!body.hasOwnProperty("username")|| !body.hasOwnProperty("password")) {
       utils.errorReponse(res, 204, "Debe enviarse el usuario y la contraseña")
       return;
     }
