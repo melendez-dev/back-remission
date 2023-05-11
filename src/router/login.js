@@ -13,18 +13,13 @@ loginRouter.get("/", (req, res) => {
 loginRouter.post("/", async (req, res) => {
   try {
     const { body } = req;
-    res.send("ok")
     // if (!body.username || !body.password) {
     //   utils.errorReponse(res, 204, "Correo y/o contraseña requeridas");
     //   return;
     // }
-    // const query = `SELECT id, username, rol FROM access WHERE username="${body.username}" and password="${body.password}"`;
-    // const data = await db.handleQuery(query);
-    // utils.sucessResponse(
-    //   res,
-    //   [],
-    //   data?.length ? "success" : "no existe el usuario"
-    // );
+    const query = `SELECT id, username, rol FROM access WHERE username="${body.username}" and password="${body.password}"`;
+    const data = await db.handleQuery(query);
+    res.json({message: "success", data: data[0], status: "success"})
   } catch (e) {
     utils.errorReponse(res, 500, e);
   }
