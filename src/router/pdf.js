@@ -1,10 +1,10 @@
 const express = require("express");
 
 // read file
-// const fs = require("fs");
-// const hbs = require("hbs");
-// const readFile = require("util").promisify(fs.readFile);
-// const htmlPDF = require("puppeteer-html-pdf");
+const fs = require("fs");
+const hbs = require("hbs");
+const readFile = require("util").promisify(fs.readFile);
+const htmlPDF = require("puppeteer-html-pdf");
 
 // database
 const db = require("../connect/connection");
