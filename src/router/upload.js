@@ -1,12 +1,12 @@
 const express = require("express");
 // database
-const db = require("../connect/connection.js");
+const db = require("../connect/connection");
 // multer
 const multer = require("multer");
 // xlsx
 const xlsx = require("xlsx");
 // utils
-const utils = require("../utils/utils.js");
+const utils = require("../utils/utils");
 // login router const
 const uploadRouter = express.Router();
 const readXlsxFile = require("read-excel-file/node");
