@@ -7,16 +7,16 @@ const readFile = require("util").promisify(fs.readFile);
 const htmlPDF = require("puppeteer-html-pdf");
 
 // database
-const db = require("../connect/connection.js");
+const db = require("../connect/connection");
 // utils
-const utils = require("../utils/utils.js");
+const utils = require("../utils/utils");
 // pdf router const
 const pdfRouter = express.Router();
 
 pdfRouter.get("/remission/:id", async (req, res) => {
   try {
     const { id } = req.params; // this id is of remission
-    const pdfData = await getInfoRemissionPDF(id, req);
+    const pdfData = {data: "data"}//await getInfoRemissionPDF(id, req);
     const options = {
       format: "A4",
     };
@@ -38,7 +38,7 @@ pdfRouter.get("/remission/:id", async (req, res) => {
 pdfRouter.post("/box", async (req, res) => {
   try {
     const { startDate, endDate } = req.body;
-    const pdfData = await getInfoBoxAndItsMovement(startDate, endDate, req);
+    const pdfData = {data: "data"}//await getInfoBoxAndItsMovement(startDate, endDate, req);
     const options = {
       format: "A4",
     };
@@ -62,10 +62,10 @@ const getInfoRemissionPDF = async (id, req) => {
   const querySelectRemission = `SELECT * FROM remission WHERE id=${id}`;
   const dataRemission = await db.handleQuery(querySelectRemission);
 
-  if (Array.isArray(dataRemission) && dataRemission?.length > 0) {
+  if (Array.isArray(dataRemission)) {
     const querySelectUser = `SELECT * FROM user WHERE identy="${dataRemission[0]["identy_user"]}"`;
     const dataUser = await db.handleQuery(querySelectUser);
-    if (Array.isArray(dataUser) && dataUser?.length > 0) {
+    if (Array.isArray(dataUser)) {
       const codesProducts = dataRemission[0]["code_product"]?.split(",");
       const dataProducts = [];
       let total = 0;
@@ -82,7 +82,7 @@ const getInfoRemissionPDF = async (id, req) => {
           const querySelectProduct = `SELECT * FROM product WHERE code = ${product}`;
           const result = await db.handleQuery(querySelectProduct);
           dataProducts.push(result[0]);
-          if (Array.isArray(result) && result.length > 0) {
+          if (Array.isArray(result)) {
             total += parseFloat(result[0]?.price);
           }
         }
@@ -147,7 +147,7 @@ const getInfoBoxAndItsMovement = async (startDate, endDate, req) => {
 
   let nameMovement = ["Ingreso", "Egreso"];
 
-  if (Array?.isArray(dataGetBoxByDate) && dataGetBoxByDate?.length > 0) {
+  if (Array?.isArray(dataGetBoxByDate)) {
     for (const dataBox of dataGetBoxByDate) {
       if (dataBox?.id) {
         const queryBoxMovement = `SELECT * FROM box_movement WHERE id_box=${dataBox?.id}`;
@@ -171,7 +171,7 @@ const getInfoBoxAndItsMovement = async (startDate, endDate, req) => {
           currency: "COP",
         });
 
-        if (Array.isArray(dataBoxMovements) && dataBoxMovements?.length > 0) {
+        if (Array.isArray(dataBoxMovements)) {
           for (const dataMovement of dataBoxMovements) {
             dataMovement["price"] = dataMovement["price"].toLocaleString(
               "es-CO",
