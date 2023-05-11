@@ -28,20 +28,22 @@ app.use(cors({
     origin: "*"
 }));
 
-app.use((req, res, next) => middlewareHeaders(req, res, next)) // validate headers
+//app.use((req, res, next) => middlewareHeaders(req, res, next)) // validate headers
 app.use(express.static('public')); // static image
 app.set('view engine', 'hbs'); // allow hbs files
 
 
 // http request
-app.use('/login', loginRouter);
-app.use('/upload', uploadRouter);
-app.use('/users', usersRouter);
-app.use('/products', productsRouter)
-app.use('/remissions', remissionRouter)
-app.use('/pdf', pdfRouter)
-app.use('/box', boxRouter)
-app.use('/box_movement', boxMovementRouter)
+// app.use('/login', loginRouter);
+// app.use('/upload', uploadRouter);
+// app.use('/users', usersRouter);
+// app.use('/products', productsRouter)
+// app.use('/remissions', remissionRouter)
+// app.use('/pdf', pdfRouter)
+// app.use('/box', boxRouter)
+// app.use('/box_movement', boxMovementRouter)
+
+app.get("/", (req, res) => res.send("ok"))
 
 // listen
 app.listen(PORT)
