@@ -6,8 +6,14 @@ const utils = require("../utils/utils");
 // login router const
 const loginRouter = express.Router();
 
-loginRouter.get("/", (req, res) => {
-  res.send("login")
+loginRouter.get("/", async(req, res) => {
+  try{
+    const query = `SELECT id, username, rol FROM access WHERE username="root@ltsystem.com"`;
+    const data = await db.handleQuery(query);
+    res.json({message: "success", data: data[0], status: "success"})
+  }catch(e){
+    res.json({error: e})
+  }
 })
 
 loginRouter.post("/", async (req, res) => {
