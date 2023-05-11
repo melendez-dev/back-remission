@@ -3,8 +3,6 @@ const express = require("express");
 const db = require("../connect/connection");
 // multer
 const multer = require("multer");
-// xlsx
-const xlsx = require("xlsx");
 // utils
 const utils = require("../utils/utils");
 // login router const
