@@ -8,8 +8,8 @@ const PORT = 3001;
 // import routers
 const loginRouter = require('./src/router/login');
 //const uploadRouter = require('./src/router/upload');
-const usersRouter = require('./src/router/users.js');
-// const productsRouter = require('./src/router/products.js');
+const usersRouter = require('./src/router/users');
+const productsRouter = require('./src/router/products');
 // const remissionRouter = require('./src/router/remission.js');
 // const pdfRouter = require('./src/router/pdf.js');
 // const boxRouter = require('./src/router/box.js');
@@ -39,7 +39,7 @@ app.set('view engine', 'hbs'); // allow hbs files
 app.use('/login', loginRouter);
 //app.use('/upload', uploadRouter);
 app.use('/users', usersRouter);
-// app.use('/products', productsRouter)
+app.use('/products', productsRouter)
 // app.use('/remissions', remissionRouter)
 // app.use('/pdf', pdfRouter)
 // app.use('/box', boxRouter)
