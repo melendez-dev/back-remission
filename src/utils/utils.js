@@ -1,11 +1,9 @@
-require('dotenv').config();
-
 const connectionDB = {
-    host: process.env.DB_HOST,
-    user: process.env.DB_HOST_USER,
-    password: process.env.DB_HOST_PASSWORD,
-    database: process.env.DB_NAME ,
-    port: process.env.DB_HOST_PORT
+    host: "190.8.176.74",
+    user: "legacyte_root",
+    password: "LegacyTech6x3!",
+    database: "legacyte_remission",
+    port: 3306 
 };
 
 const sucessResponse = (res, data, message = "") => {

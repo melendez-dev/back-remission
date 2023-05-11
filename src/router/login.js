@@ -7,10 +7,12 @@ const utils = require("../utils/utils.js");
 const loginRouter = express.Router();
 
 loginRouter.post("/", async (req, res) => {
-  const { body } = req;
   try {
-    if (!body.username || !body.password)
+    const { body } = req;
+    if (!body.username || !body.password) {
       utils.errorReponse(res, 204, "Correo y/o contraseña requeridas");
+      return;
+    }
     const query = `SELECT id, username, rol FROM access WHERE username="${body.username}" and password="${body.password}"`;
     const data = await db.handleQuery(query);
     utils.sucessResponse(
