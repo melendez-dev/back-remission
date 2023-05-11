@@ -21,12 +21,15 @@ const loginRouter = require('./src/router/login');
 // create app
 const app = express();
 
+
+app.use(cors({
+    origin: '*'
+}));
+
 // middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cors({
-    origin: "*"
-}));
+
 
 app.use(express.static('public')); // static image
 app.set('view engine', 'hbs'); // allow hbs files
