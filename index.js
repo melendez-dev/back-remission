@@ -7,7 +7,7 @@ const PORT = 3001;
 
 // import routers
 const loginRouter = require('./src/router/login');
-const uploadRouter = require('./src/router/upload');
+//const uploadRouter = require('./src/router/upload');
 // const usersRouter = require('./src/router/users.js');
 // const productsRouter = require('./src/router/products.js');
 // const remissionRouter = require('./src/router/remission.js');
@@ -38,7 +38,7 @@ app.set('view engine', 'hbs'); // allow hbs files
 // http request
 //app.use((req, res, next) => middlewareHeaders(req, res, next)) // validate headers
 app.use('/login', loginRouter);
-app.use('/upload', uploadRouter);
+//app.use('/upload', uploadRouter);
 // app.use('/users', usersRouter);
 // app.use('/products', productsRouter)
 // app.use('/remissions', remissionRouter)
