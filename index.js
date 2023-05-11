@@ -43,7 +43,5 @@ app.use('/login', loginRouter);
 // app.use('/box', boxRouter)
 // app.use('/box_movement', boxMovementRouter)
 
-app.get("/", (req, res) => res.send("ok"))
-
 // listen
 app.listen(PORT)
