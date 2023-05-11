@@ -15,7 +15,7 @@ const pdfRouter = express.Router();
 
 pdfRouter.get("/remission/:id", async (req, res) => {
   try {
-    const { id } = req.params; // this id is of remission
+    //const { id } = req.params; // this id is of remission
     const pdfData = {data: "data"}//await getInfoRemissionPDF(id, req);
     const options = {
       format: "A4",
@@ -28,34 +28,34 @@ pdfRouter.get("/remission/:id", async (req, res) => {
     const buffer = await htmlPDF.create(content, options);
 
     // res attachment
-    res.attachment(`remission_${id}.pdf`);
+    res.attachment(`remission.pdf`);
     res.end(buffer);
   } catch (e) {
     utils.errorReponse(res, 500, e);
   }
 });
 
-pdfRouter.post("/box", async (req, res) => {
-  try {
-    const { startDate, endDate } = req.body;
-    const pdfData = {data: "data"}//await getInfoBoxAndItsMovement(startDate, endDate, req);
-    const options = {
-      format: "A4",
-    };
+// pdfRouter.post("/box", async (req, res) => {
+//   try {
+//     const { startDate, endDate } = req.body;
+//     const pdfData = {data: "data"}//await getInfoBoxAndItsMovement(startDate, endDate, req);
+//     const options = {
+//       format: "A4",
+//     };
 
-    // using template
-    const html = await readFile("src/views/box.hbs", "utf8");
-    const template = hbs.compile(html);
-    const content = template(pdfData);
-    const buffer = await htmlPDF.create(content, options);
+//     // using template
+//     const html = await readFile("src/views/box.hbs", "utf8");
+//     const template = hbs.compile(html);
+//     const content = template(pdfData);
+//     const buffer = await htmlPDF.create(content, options);
 
-    // res attachment
-    res.attachment(`box-${startDate}-${endDate}.pdf`);
-    res.end(buffer);
-  } catch (e) {
-    utils.errorReponse(res, 500, e);
-  }
-});
+//     // res attachment
+//     res.attachment(`box-${startDate}-${endDate}.pdf`);
+//     res.end(buffer);
+//   } catch (e) {
+//     utils.errorReponse(res, 500, e);
+//   }
+// });
 
 // // utils
 // const getInfoRemissionPDF = async (id, req) => {
