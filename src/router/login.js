@@ -18,10 +18,10 @@ loginRouter.post("/", async (req, res) => {
       return;
     }
     const query = `SELECT id, username, rol FROM access WHERE username="${body.username}" and password="${body.password}"`;
-    const data = await db.handleQuery(query);
+    //const data = await db.handleQuery(query);
     utils.sucessResponse(
       res,
-      data,
+      [],
       data?.length ? "success" : "no existe el usuario"
     );
   } catch (e) {
