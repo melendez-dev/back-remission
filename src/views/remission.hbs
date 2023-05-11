@@ -1,0 +1,266 @@
+<html>
+
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Remission {{dataRemission.id}}</title>
+    <style type="text/css">
+        table, th, td { 
+            border: 1px solid black; 
+            border-collapse: collapse;
+            padding: 5px; 
+            width: 100%;
+        }
+        .body {
+            padding: 30px 10px 0px 10px
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 2fr 2fr 1fr;
+        }
+        .textAlign {
+            text-align: center;
+        }
+        .numberContainer {
+            border: 1px solid #3C3C3B;
+            border-radius: 10px;
+            text-align: center;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .numberText {
+            color: red;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .containerUserData {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 10px;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        .borderTable {
+            border: 1px solid #3C3C3B;
+            border-radius: 5px;
+        }
+        .borderBottom {
+            border-bottom: 1px solid #3C3C3B;
+        }
+        .containerDate {
+            display: grid;
+            justify-content: center;
+            align-items: center;
+            grid-template-columns: 12fr;
+        }
+        .borderDate {
+            border: 1px solid #3C3C3B;
+            border-radius: 12px 12px 8px 8px;
+            height: 40px;
+        }
+        .containerTitle {
+            background-color: #3C3C3B;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 11px 11px 0px 0px;
+        }
+        .titleText {
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .containerGetDate {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            justify-content: center;
+            padding: 0px 30px;
+            text-align: center;
+            align-items: center;
+        }
+
+        .containerBottom {
+            display: grid;
+            grid-template-columns: 3fr 1fr 1fr;
+            gap: 10px;
+            margin-top: 30px;
+            height: 100px;
+        }
+        .borderBottomSign {
+            border: 1px solid #3b3c3b;
+            border-radius: 10px;
+            padding: 5px;
+            margin-top: 30px;
+        }
+        .containerStatus {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            margin-bottom: 30px;
+        }
+
+        .containerSign {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px
+        }
+
+        .borderSign {
+            border: 1px solid #3b3c3b;
+            border-radius: 10px;
+            padding: 5px;
+            height: 60px
+        }
+
+        .bottomFlex {
+            height: 100%;
+            display: flex;
+            align-items: flex-end;
+        }
+        .borderSeparate {
+            width: 100%;
+            border-top: 1px solid #3b3c3b;
+        }
+      </style>
+  </head>
+
+  <body class="body">
+
+    {{!-- TOP --}}
+    <div class="container">
+      <div class="col-6">
+        {{!-- <img src="ruta/al/logo.png" alt="Logo" /> --}}
+        <img src="{{baseUrl}}/images/logoPDF.png" alt="Logo" width="200" height="70" />
+      </div>
+      <div class="textAlign">
+        <span >C.C Unilago Cra 15# 78-05</span> <br />
+        <span ><b>Local 2-270A</b></span> <br />
+        <span>Cel. 311 486 9173</span> 
+      </div>
+      <div>
+        <div class="numberContainer">
+            <span class="numberText">N° {{dataRemission.id}}</span>
+        </div>
+      </div>
+    </div>
+    
+    {{!-- User data --}}
+    <div class="containerUserData">
+      <div>
+        <div class="borderTable">
+            <div class="borderBottom">
+                <b>Nombre: </b> {{dataUser.name}}
+            </div>
+            <div class="borderBottom">
+                <b>CC o NIT: </b> {{dataUser.identy}}
+            </div>
+            <div class="borderBottom">
+                <b>Teléfono: </b> {{dataUser.phone}}
+            </div>
+            <div>
+                <b>Dirección: </b> {{dataUser.addres}}, {{dataUser.city}}
+            </div>
+        </div>
+      </div>
+
+      <div class="borderDate">
+        <div class="containerDate">
+            <div class="containerTitle">
+                <span class="titleText">Fecha</span>
+            </div>
+            <div class="containerGetDate">
+                <div>
+                    <span>
+                        {{dataRemission.day}}
+                    </span>
+                </div>
+                <div>
+                    <span>
+                        {{dataRemission.month}}
+                    </span>
+                </div>
+                <div>
+                    <span>
+                        {{dataRemission.year}}
+                    </span>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    {{!-- status --}}
+    <div class="containerStatus">
+        <div>
+            <span><b>Estado: </b></span> <span> {{dataRemission.status_remission}}</span>
+        </div>
+        <div>
+            <span><b>Método de pago: </b></span> <span>{{dataRemission.payment_method}}</span>
+        </div>
+    </div>
+    {{!-- products --}}
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre del producto</th>
+          <th>Código</th>
+          <th>Valor</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each dataProducts}}
+          <tr>
+            <td>{{name}}</td>
+            <td>{{code}}</td>
+            <td>{{price}}</td>
+          </tr>
+        {{/each}}
+        <tr>
+          <td colspan="2">
+            <div>
+                <span><b>Observaciones</b></span>
+            </div>
+            <div>
+                <span>
+                    {{dataRemission.observation}}
+                </span>
+            </div>
+          </td>
+          <td colspan="2">Total</td>
+          <td>{{dataRemission.total_amount}}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    {{!-- BOTTOM --}}
+    <div class="borderBottomSign">
+        <span>
+           GARANTIA __________ MESES Para efectos de garantía, se necesita copia de la factura
+           y la mercancia con todos los accesorios  y empaques, icopores, bolsa originales. <b>No se dará garantía </b>
+           por daño ocasionado por alto voltaje, humedad, contacto con liquido, quemadura, rayones, golpes, desportillados, deteriodo
+           o desconfiguración de maquina o software, virus o por levantar sellos de seguridad. 
+           <b>Después de los 30 días no se responde por mercancia dejada en reparación.</b>  
+           Horario de Garantía: Lunes a Viernes de 10:00 am - 6:00pm
+        </span>
+    </div>
+    {{!-- Signs --}}
+    <div class="containerSign">
+        <div class="borderSign">
+            <div class="bottomFlex">
+               <div class="borderSeparate">
+                <span><b>FIRMA AUTORIZADO</b></span>
+               </div>
+            </div>
+        </div>
+        <div class="borderSign">
+            <div class="bottomFlex">
+                <div class="borderSeparate">
+                    <span><b>FIRMA CLIENTE</b></span>
+                </div>
+            </div>
+        </div>
+    </div>
+  </body>
+</html>

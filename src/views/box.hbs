@@ -1,0 +1,108 @@
+<html>
+
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Remission {{dataRemission.id}}</title>
+    <style type="text/css">
+        table, th, td { 
+            border: 1px solid black; 
+            border-collapse: collapse;
+            padding: 5px; 
+            width: 100%;
+        }
+        .body {
+            width: 100%;
+        }
+        .main {
+          padding: 30px 10px 0px 10px;
+          width: 100%;
+          height: 100vh;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            width: 100%
+        }
+        .containerBox {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .containerMovements {
+          margin-top: 30px;
+        }
+        .gridLabel {
+          margin-top: 15px;
+          display: grid;
+          grid-template-columns: 1fr 1fr 2fr 1fr;
+        }
+        .incomes {
+          color: green
+        }
+        .outcomes {
+          color: red
+        }
+      </style>
+  </head>
+
+  <body class="body">
+    {{#each dataBox}}
+      <div class="main">
+        <div class="container">
+          <div class="col-6">
+            <img src="{{../baseUrl}}/images/logoPDF.png" alt="Logo" width="200" height="70" />
+          </div>
+          <div>
+            <div>
+              <h3>Informe de cierre de caja</h3>
+            </div>
+            <div>
+              Fecha: {{created_at}}
+            </div>
+          </div>
+        </div>
+        <div class="containerBox">
+          <div>
+            Precio de caja abierta: {{ opening }}
+          </div>
+          <div>
+            Precio de caja cerrada: {{ ending }}
+          </div>
+          <div>
+            Diferencia: {{ total_diff }}
+          </div>
+        </div>
+
+        <div class="containerMovements">
+          <div>
+            <h3>Movimientos de la caja</h3>
+          </div>
+          <div class="gridLabel">
+           <div>
+              Fecha
+           </div>
+           <div>
+              Tipo
+           </div>
+           <div>
+              Precio
+           </div>
+           <div>
+              Observaciones
+           </div>
+          </div>
+          {{#each movements}}
+            <div class="gridLabel">
+              <div>{{created_at}}</div>
+              <div>{{type}}</div>
+              <div> <span class="{{type_color}}">{{price}}</span> {{type_income}}</div>
+              <div>{{observations}}</div>
+            </div>
+          {{/each}}
+        </div>
+      </div>
+    {{/each}}
+  </body>
+</html>
