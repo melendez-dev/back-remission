@@ -7,9 +7,9 @@ const readFile = require("util").promisify(fs.readFile);
 const htmlPDF = require("puppeteer-html-pdf");
 
 // database
-const db = require("../connect/connection");
+const db = require("../connect/connection.js");
 // utils
-const utils = require("../utils/utils");
+const utils = require("../utils/utils.js");
 // pdf router const
 const pdfRouter = express.Router();
 

@@ -1,5 +1,5 @@
 const mysql = require("mysql");
-const utils = require("../utils/utils");
+const utils = require("../utils/utils.js");
 
 const handleQuery = (sqlQuery) => {
   return new Promise((resolve, reject) => {

@@ -6,17 +6,17 @@ const cors = require('cors');
 const PORT = 3001;
 
 // import routers
-const loginRouter = require('./src/router/login');
-const uploadRouter = require('./src/router/upload');
-const usersRouter = require('./src/router/users');
-const productsRouter = require('./src/router/products');
-const remissionRouter = require('./src/router/remission');
-const pdfRouter = require('./src/router/pdf');
-const boxRouter = require('./src/router/box');
-const boxMovementRouter = require('./src/router/box_movement');
+const loginRouter = require('./src/router/login.js');
+const uploadRouter = require('./src/router/upload.js');
+const usersRouter = require('./src/router/users.js');
+const productsRouter = require('./src/router/products.js');
+const remissionRouter = require('./src/router/remission.js');
+const pdfRouter = require('./src/router/pdf.js');
+const boxRouter = require('./src/router/box.js');
+const boxMovementRouter = require('./src/router/box_movement.js');
 
 // import middleware
-const middlewareHeaders = require('./src/middlewares/headers');
+const middlewareHeaders = require('./src/middlewares/headers.js');
 
 // create app
 const app = express();
@@ -24,7 +24,9 @@ const app = express();
 // middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({
+    origin: "*"
+}));
 
 app.use((req, res, next) => middlewareHeaders(req, res, next)) // validate headers
 app.use(express.static('public')); // static image
