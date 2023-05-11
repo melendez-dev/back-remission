@@ -1,6 +1,6 @@
 const express = require("express");
 // database
-//const db = require("../connect/connection.js");
+const db = require("../connect/connection");
 // utils
 //const utils = require("../utils/utils.js");
 // login router const
