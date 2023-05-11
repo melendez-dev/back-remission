@@ -16,20 +16,21 @@ const pdfRouter = express.Router();
 pdfRouter.get("/remission/:id", async (req, res) => {
   try {
     //const { id } = req.params; // this id is of remission
-    const pdfData = {data: "data"}//await getInfoRemissionPDF(id, req);
-    const options = {
-      format: "A4",
-    };
+    // const pdfData = {data: "data"}//await getInfoRemissionPDF(id, req);
+    // const options = {
+    //   format: "A4",
+    // };
 
-    // using template
-    const html = await readFile("src/views/remission.hbs", "utf8");
-    const template = hbs.compile(html);
-    const content = template(pdfData);
-    const buffer = await htmlPDF.create(content, options);
+    // // using template
+    // const html = await readFile("src/views/remission.hbs", "utf8");
+    // const template = hbs.compile(html);
+    // const content = template(pdfData);
+    // const buffer = await htmlPDF.create(content, options);
 
-    // res attachment
-    res.attachment(`remission.pdf`);
-    res.end(buffer);
+    // // res attachment
+    // res.attachment(`remission.pdf`);
+    // res.end(buffer);
+    res.send("ok")
   } catch (e) {
     utils.errorReponse(res, 500, e);
   }
