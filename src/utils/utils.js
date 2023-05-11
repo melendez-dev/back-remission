@@ -1,8 +1,9 @@
 const connectionDB = {
-    host: '127.0.0.1',
-    user: 'root',
-    password: 'root',
-    database: 'remission'
+    host: process.env.DB_HOST,
+    user: process.env.DB_HOST_USER,
+    password: process.env.DB_HOST_PASSWORD,
+    database: process.env.DB_NAME ,
+    port: process.env.DB_HOST_PORT
 };
 
 const sucessResponse = (res, data, message = "") => {
