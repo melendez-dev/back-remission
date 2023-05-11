@@ -20,7 +20,8 @@ loginRouter.get("/", async(req, res) => {
 loginRouter.post("/", async (req, res) => {
   try {
     const { body } = req;
-    if (!body?.username || !body?.password) {
+    if (!body.hasOwnProperty("usernmae")|| !body.hasOwnProperty("password")) {
+      utils.errorReponse(res, 204, "Debe enviarse el usuario y la contraseña")
       return;
     }
     const query = `SELECT id, username, rol FROM access WHERE username="${body.username}" and password="${body.password}"`;
