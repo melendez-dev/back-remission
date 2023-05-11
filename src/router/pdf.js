@@ -16,20 +16,22 @@ const pdfRouter = express.Router();
 pdfRouter.get("/remission/:id", async (req, res) => {
   try {
     const { id } = req.params; // this id is of remission
-    const pdfData = {data: "data"}//await getInfoRemissionPDF(id, req);
-    const options = {
-      format: "A4",
-    };
 
-    // using template
-    const html = await readFile("src/views/remission.hbs", "utf8");
-    const template = hbs.compile(html);
-    const content = template(pdfData);
-    const buffer = await htmlPDF.create(content, options);
+    if (id){
+      const pdfData = {data: "data"}//await getInfoRemissionPDF(id, req);
+      const options = {
+        format: "A4",
+      };
+      // using template
+      const html = await readFile("src/views/remission.hbs", "utf8");
+      const template = hbs.compile(html);
+      const content = template(pdfData);
+      const buffer = await htmlPDF.create(content, options);
 
-    // res attachment
-    res.attachment(`remission_${id}.pdf`);
-    res.end(buffer);
+      // res attachment
+      res.attachment(`remission_${id}.pdf`);
+      res.end(buffer);
+    }
   } catch (e) {
     utils.errorReponse(res, 500, e);
   }
@@ -38,20 +40,23 @@ pdfRouter.get("/remission/:id", async (req, res) => {
 pdfRouter.post("/box", async (req, res) => {
   try {
     const { startDate, endDate } = req.body;
-    const pdfData = {data: "data"}//await getInfoBoxAndItsMovement(startDate, endDate, req);
-    const options = {
-      format: "A4",
-    };
 
-    // using template
-    const html = await readFile("src/views/box.hbs", "utf8");
-    const template = hbs.compile(html);
-    const content = template(pdfData);
-    const buffer = await htmlPDF.create(content, options);
+    if (startDate, endDate){
+      const pdfData = {data: "data"}//await getInfoBoxAndItsMovement(startDate, endDate, req);
+      const options = {
+        format: "A4",
+      };
 
-    // res attachment
-    res.attachment(`box-${startDate}-${endDate}.pdf`);
-    res.end(buffer);
+     // using template
+      const html = await readFile("src/views/box.hbs", "utf8");
+      const template = hbs.compile(html);
+      const content = template(pdfData);
+      const buffer = await htmlPDF.create(content, options);
+
+     // res attachment
+      res.attachment(`box-${startDate}-${endDate}.pdf`);
+      res.end(buffer);
+    }
   } catch (e) {
     utils.errorReponse(res, 500, e);
   }
