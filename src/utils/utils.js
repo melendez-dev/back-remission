@@ -3,7 +3,6 @@ const connectionDB = {
     user: "legacyte_root",
     password: "LegacyTech6x3!",
     database: "legacyte_remission",
-    port: 3306 
 };
 
 const sucessResponse = (res, data, message = "") => {
