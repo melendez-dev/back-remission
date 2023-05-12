@@ -14,8 +14,8 @@ loginRouter.post("/", async (req, res) => {
       return;
     }
     const query = `SELECT id, username, rol FROM access WHERE username="${body.username}" and password="${body.password}"`;
-    const data = await db.handleQuery(query);
-    utils.sucessResponse(res, data, "success");
+    //const data = await db.handleQuery(query);
+    utils.sucessResponse(res, [], "success");
   } catch (e) {
     utils.errorReponse(res, 500, e);
   }
