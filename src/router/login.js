@@ -12,14 +12,14 @@ loginRouter.post("/", async (req, res) => {
 
     res.send("not is vercel is the connection db")
 
-    return
-    if (!body.hasOwnProperty("username")|| !body.hasOwnProperty("password")) {
-      utils.errorReponse(res, 204, "Debe enviarse el usuario y la contraseña")
-      return;
-    }
-    const query = `SELECT id, username, rol FROM access WHERE username="${body.username}" and password="${body.password}"`;
-    const data = await db.handleQuery(query);
-    res.json({message: "success", data: data[0], status: "success"})
+    // return
+    // if (!body.hasOwnProperty("username")|| !body.hasOwnProperty("password")) {
+    //   utils.errorReponse(res, 204, "Debe enviarse el usuario y la contraseña")
+    //   return;
+    // }
+    // const query = `SELECT id, username, rol FROM access WHERE username="${body.username}" and password="${body.password}"`;
+    // const data = await db.handleQuery(query);
+    // res.json({message: "success", data: data[0], status: "success"})
   } catch (e) {
     utils.errorReponse(res, 500, e);
   }
