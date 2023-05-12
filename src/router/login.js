@@ -19,6 +19,7 @@ loginRouter.post("/", async (req, res) => {
       'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
     )
     res.send("not is vercel is the connection db")
+
     // return
     // if (!body.hasOwnProperty("username")|| !body.hasOwnProperty("password")) {
     //   utils.errorReponse(res, 204, "Debe enviarse el usuario y la contraseña")
