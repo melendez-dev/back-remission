@@ -7,7 +7,7 @@ const utils = require("../utils/utils");
 const loginRouter = express.Router();
 
 loginRouter.post("/", async (req, res) => {
-  res.send("not is vercel is the connection db")
+  res.send("not is vercel is the connection db why")
   // try {
   //   //const { body } = req;
   //   // if (!body.hasOwnProperty("username")|| !body.hasOwnProperty("password")) {
