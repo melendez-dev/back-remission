@@ -9,6 +9,10 @@ const loginRouter = express.Router();
 loginRouter.post("/", async (req, res) => {
   try {
     const { body } = req;
+
+    res.send("not is vercel is the connection db")
+
+    return
     if (!body.hasOwnProperty("username")|| !body.hasOwnProperty("password")) {
       utils.errorReponse(res, 204, "Debe enviarse el usuario y la contraseña")
       return;
