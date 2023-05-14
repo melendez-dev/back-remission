@@ -71,6 +71,7 @@
     "xlsx": "^0.18.5"
   },
   "scripts": {
+    "start": "node index.js",
     "dev": "nodemon --watch ./index.js --watch ./src"
   },
   "author": "sebastian melendez",
