@@ -4,7 +4,7 @@ env_variables:
   # Configura aquí tus variables de entorno si es necesario
   DB_HOST: "190.8.176.74"
   DB_HOST_PORT: 3306
-  DB_HOST_USER=: legacyte_root"
+  DB_HOST_USER: "legacyte_root"
   DB_HOST_PASSWORD: "LegacyTech6x3!"
   DB_NAME: "legacyte_remission"
 
