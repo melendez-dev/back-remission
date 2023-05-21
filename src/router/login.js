@@ -13,7 +13,7 @@ loginRouter.post("/", async (req, res) => {
       utils.errorReponse(res, 204, "Debe enviarse el usuario y la contraseña")
       return;
     }
-    const query = `SELECT id, username, rol FROM legacyte_remission.access WHERE username="${body.username}" and password="${body.password}"`;
+    const query = `SELECT id, username, rol FROM access WHERE username="${body.username}" and password="${body.password}"`;
     const data = await db.handleQuery(query);
     utils.sucessResponse(res, data, "success");
   } catch (e) {

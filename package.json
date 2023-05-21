@@ -32,6 +32,7 @@
     "has": "^1.0.3",
     "has-symbols": "^1.0.3",
     "hbs": "^4.2.0",
+    "html-pdf-node": "^1.0.8",
     "http-errors": "^2.0.0",
     "iconv-lite": "^0.4.24",
     "inherits": "^2.0.4",

@@ -1,8 +1,8 @@
 const connectionDB = {
-    host: "190.8.176.74",
-    user: "legacyte_root",
-    password: "LegacyTech6x3!",
-    database: "legacyte_remission",
+    host: "localhost",
+    user: "root",
+    password: "F0712020",
+    database: "remission",
     port: 3306 
 };
 

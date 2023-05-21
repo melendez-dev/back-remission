@@ -5,7 +5,7 @@ const fs = require("fs");
 const hbs = require("hbs");
 const readFile = require("node:util").promisify(fs.readFile);
 //const htmlPDF = require("puppeteer-html-pdf");
-
+const html_to_pdf = require('html-pdf-node');
 // database
 const db = require("../connect/connection");
 // utils
@@ -16,7 +16,7 @@ const pdfRouter = express.Router();
 pdfRouter.get("/remission/:id", async (req, res) => {
   try {
     const { id } = req.params; // this id is of remission
-    const pdfData = {data: "data"}//await getInfoRemissionPDF(id, req);
+    const pdfData = await getInfoRemissionPDF(id, req);
     const options = {
       format: "A4",
     };
@@ -25,11 +25,15 @@ pdfRouter.get("/remission/:id", async (req, res) => {
     const html = await readFile("src/views/remission.hbs", "utf8");
     const template = hbs.compile(html);
     const content = template(pdfData);
-    const buffer = await htmlPDF.create(content, options);
+    html_to_pdf.generatePdf({content}, options).then(pdfBuffer => {
+        res.attachment(`remission_${id}.pdf`);
+        res.end(pdfBuffer);
+    });
+    //const buffer = await htmlPDF.create(content, options);
 
     // res attachment
-    res.attachment(`remission.pdf`);
-    res.end(buffer);
+    //res.attachment(`remission.pdf`);
+    //res.end(buffer);
   } catch (e) {
     utils.errorReponse(res, 500, e);
   }
@@ -38,7 +42,7 @@ pdfRouter.get("/remission/:id", async (req, res) => {
 pdfRouter.post("/box", async (req, res) => {
   try {
     const { startDate, endDate } = req.body;
-    const pdfData = {data: "data"}//await getInfoBoxAndItsMovement(startDate, endDate, req);
+    const pdfData = await getInfoBoxAndItsMovement(startDate, endDate, req);
     const options = {
       format: "A4",
     };
@@ -47,11 +51,13 @@ pdfRouter.post("/box", async (req, res) => {
     const html = await readFile("src/views/box.hbs", "utf8");
     const template = hbs.compile(html);
     const content = template(pdfData);
-    const buffer = await htmlPDF.create(content, options);
-
+    html_to_pdf.generatePdf({content}, options).then(pdfBuffer => {
+        res.attachment(`box-${startDate}-${endDate}.pdf`);
+        res.end(pdfBuffer);
+    });
+    //const buffer = await htmlPDF.create(content, options);
     // res attachment
-    res.attachment(`box-${startDate}-${endDate}.pdf`);
-    res.end(buffer);
+    //res.end(buffer);
   } catch (e) {
     utils.errorReponse(res, 500, e);
   }
@@ -191,7 +197,6 @@ const getInfoBoxAndItsMovement = async (startDate, endDate, req) => {
 
             dataMovement["type_color"] = dataMovement["type_income"] ? "incomes" : "outcomes"
 
-            console.log({dataMovement})
           }
           dataBox["movements"] = dataBoxMovements;
           arrayData.push(dataBox);
