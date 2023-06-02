@@ -46,11 +46,23 @@ boxMovementRouter.post("/incomes", async (req, res) => {
       status,
     } = req.body;
 
+    // verify is exist the consecutive
+    const queryConsecutive = `SELECT * FROM box_movement WHERE consecutive="${consecutive}"`
+
+    const dataConsecutive = await db.handleQuery(queryConsecutive);
+
+    if (dataConsecutive.length) {
+      res.json({
+        status: "error",
+        message: "El consecutivo ya existe",
+        data: []
+      })
+
+      return // finished successfully
+    }
+
     const date = new Date().toISOString().slice(0, 19).replace("T", " ");
-    const queryCount = `SELECT id FROM box_movement ORDER BY id DESC`;
-    const countId = await db.handleQuery(queryCount);
-    const numberID = countId?.length > 0 ? countId[0]?.id + 1 : 1;
-    const queryCreate = `INSERT INTO box_movement (consecutive, type, id_box, observations, created_at, user_creator, updated_at, user_update, status, price, type_income) VALUES ("${consecutive}-${numberID}",  ${type},  ${id_box}, "${observation}", "${date}", "${user_creator}", "${date}", "${user_updated}", ${status}, ${price}, ${type_income} )`;
+    const queryCreate = `INSERT INTO box_movement (consecutive, type, id_box, observations, created_at, user_creator, updated_at, user_update, status, price, type_income) VALUES ("${consecutive}",  ${type},  ${id_box}, "${observation}", "${date}", "${user_creator}", "${date}", "${user_updated}", ${status}, ${price}, ${type_income} )`;
     const data = await db.handleQuery(queryCreate);
 
     // update price
