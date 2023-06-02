@@ -46,10 +46,25 @@ boxRouter.put("/to-close/:id", async (req, res) => {
 
 boxRouter.put("/:id", async (req, res) => {
   try {
+    let priceMovement = 0;
     const { id } = req.params;
     const { opening, status, user_creator } = req.body;
+
+    const queryGetMovement = `SELECT type, price FROM box_movement WHERE id_box=${id}`;
+    const dataPriceMovement = await db.handleQuery(queryGetMovement);
+
+    for (let obj of dataPriceMovement) {
+      if (obj.type == 1) {
+        priceMovement += obj.price;
+      } else {
+        priceMovement -= obj.price;
+      }
+    }
+
     const date = new Date().toISOString().slice(0, 19).replace("T", " ");
-    const queryUpdated = `UPDATE box SET opening=${opening}, user_creator="${user_creator}", ending=NULL, total_diff=NULL, user_finished=NULL, status=${status}, updated_at="${date}" WHERE id=${id}`;
+    const queryUpdated = `UPDATE box SET opening=${
+      opening + priceMovement
+    }, user_creator="${user_creator}", ending=NULL, total_diff=NULL, user_finished=NULL, status=${status}, updated_at="${date}" WHERE id=${id}`;
     const data = await db.handleQuery(queryUpdated);
     utils.sucessResponse(res, data, "success");
   } catch (e) {
