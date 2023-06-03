@@ -28,6 +28,16 @@ remissionRouter.get("/", async (req, res) => {
 
     const data = await db.handleQuery(queryLimitOffset);
 
+    let priceArr = []
+    for (let obj of data){
+      for (let product of obj.code_product.split(",")) {
+        let query = `SELECT price FROM product WHERE code=${product}`;
+        let dataPrice =  await db.handleQuery(query)
+        priceArr.push(dataPrice[0]?.price);
+      }
+      obj["total"] = priceArr.reduce((sum, price) => sum + price, 0);
+    }
+
     // data from pagination
     const dataPagination = {
       data: data,
