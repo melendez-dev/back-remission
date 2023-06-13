@@ -21,14 +21,13 @@ uploadRouter.post("/users/:rol", upload.single("file"), (req, res) => {
 
           const result = await db.handleQuery(queryIdentifier);
           if (!result.length) {
-            const queryCreate = `
-                  INSERT INTO user (name, type_identy, identy, addres, city, phone, created_at, created_by) 
-                  VALUES ("${item[0]}", "${item[1]}", ${item[2]}, "${
-              item[6]
-            }", "${item[7]}", "${item[8]}", "${new Date()
+            const date = subtractHours(new Date(), 5)
               .toISOString()
               .slice(0, 19)
-              .replace("T", " ")}", "${rol}")
+              .replace("T", " ");
+            const queryCreate = `
+                  INSERT INTO user (name, type_identy, identy, addres, city, phone, created_at, created_by) 
+                  VALUES ("${item[0]}", "${item[1]}", ${item[2]}, "${item[6]}", "${item[7]}", "${item[8]}", "${date}", "${rol}")
                 `;
 
             await db.handleQuery(queryCreate);
@@ -57,15 +56,14 @@ uploadRouter.post("/products/:rol", upload.single("file"), (req, res) => {
 
           const result = await db.handleQuery(queryIdentifier);
           if (!result.length) {
+            const date = subtractHours(new Date(), 5)
+              .toISOString()
+              .slice(0, 19)
+              .replace("T", " ");
+
             const queryCreate = `
                   INSERT INTO product (name, code, price, created_at, updated_at, status, updated_by) 
-                  VALUES ("${item[2]}", "${item[1]}", ${item[11]}, "${new Date()
-              .toISOString()
-              .slice(0, 19)
-              .replace("T", " ")}", "${new Date()
-              .toISOString()
-              .slice(0, 19)
-              .replace("T", " ")}", 1, "${rol}")
+                  VALUES ("${item[2]}", "${item[1]}", ${item[11]}, "${date}", "${date}", 1, "${rol}")
                 `;
             await db.handleQuery(queryCreate);
           }
@@ -82,5 +80,11 @@ uploadRouter.post("/products/:rol", upload.single("file"), (req, res) => {
     utils.errorReponse(res, 500, e);
   }
 });
+
+function subtractHours(date, hours) {
+  date.setHours(date.getHours() - hours);
+
+  return date;
+}
 
 module.exports = uploadRouter;

@@ -1,5 +1,5 @@
 const connectionDB = {
-    host: "localhost",
+    host: "127.0.0.1",
     user: "root",
     password: "F0712020",
     database: "remission",

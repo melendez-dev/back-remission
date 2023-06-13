@@ -61,7 +61,7 @@ boxMovementRouter.post("/incomes", async (req, res) => {
       return // finished successfully
     }
 
-    const date = new Date().toISOString().slice(0, 19).replace("T", " ");
+    const date = subtractHours(new Date(), 5).toISOString().slice(0, 19).replace("T", " ")
     const queryCreate = `INSERT INTO box_movement (consecutive, type, id_box, observations, created_at, user_creator, updated_at, user_update, status, price, type_income) VALUES ("${consecutive}",  ${type},  ${id_box}, "${observation}", "${date}", "${user_creator}", "${date}", "${user_updated}", ${status}, ${price}, ${type_income} )`;
     const data = await db.handleQuery(queryCreate);
 
@@ -92,7 +92,7 @@ boxMovementRouter.post("/outcomes", async (req, res) => {
       user_updated,
       status,
     } = req.body;
-    const date = new Date().toISOString().slice(0, 19).replace("T", " ");
+    const date = subtractHours(new Date(), 5).toISOString().slice(0, 19).replace("T", " ")
     const queryCreate = `INSERT INTO box_movement (consecutive, type, id_box, observations, created_at, user_creator, updated_at, user_update, status, price, type_income) VALUES (NULL,  ${type},  ${id_box}, "${observation}", "${date}", "${user_creator}", "${date}", "${user_updated}", ${status}, ${price}, NULL)`;
     const data = await db.handleQuery(queryCreate);
 
@@ -157,5 +157,11 @@ boxMovementRouter.get("/close/:id", async (req, res) => {
     console.log(e);
   }
 });
+
+function subtractHours(date, hours) {
+  date.setHours(date.getHours() - hours);
+
+  return date;
+}
 
 module.exports = boxMovementRouter;

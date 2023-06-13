@@ -22,17 +22,26 @@ remissionRouter.get("/", async (req, res) => {
 
     const offset = (page - 1) * item; // offset
 
-    const queryLimitOffset = `SELECT * FROM remission WHERE (identy_user LIKE "${filter}%" OR code_product LIKE "%${filter}%") AND status IN (${status
+    // normal query (code product, name, identy, date) filter
+    let queryLimitOffset = `SELECT remission.id, remission.code_product, remission.identy_user, remission.payment_method, remission.created_at, remission.user_creator, remission.updated_at, remission.status, remission.observation, user.name FROM remission JOIN user ON remission.identy_user = user.identy WHERE (remission.identy_user LIKE "${filter}%" OR remission.code_product LIKE "%${filter}%" OR user.name LIKE "${filter}%" OR remission.created_at LIKE "${filter}%") AND status IN (${status
       .split(",")
-      .join(",")}) ORDER BY id DESC LIMIT ${item} offset ${offset}`;
+      .join(",")}) ORDER BY remission.id DESC LIMIT ${item} offset ${offset}`;
+
+    // match for id filter
+    if (filter.startsWith("id-")) {
+      const id = parseInt(filter.substring(3));
+      queryLimitOffset = `SELECT remission.id, remission.code_product, remission.identy_user, remission.payment_method, remission.created_at, remission.user_creator, remission.updated_at, remission.status, remission.observation, user.name FROM remission JOIN user ON remission.identy_user = user.identy WHERE remission.id=${id} AND status IN (${status
+        .split(",")
+        .join(",")}) ORDER BY remission.id DESC LIMIT ${item} offset ${offset}`;
+    }
 
     const data = await db.handleQuery(queryLimitOffset);
 
-    let priceArr = []
-    for (let obj of data){
+    let priceArr = [];
+    for (let obj of data) {
       for (let product of obj.code_product.split(",")) {
         let query = `SELECT price FROM product WHERE code=${product}`;
-        let dataPrice =  await db.handleQuery(query)
+        let dataPrice = await db.handleQuery(query);
         priceArr.push(dataPrice[0]?.price);
       }
       obj["total"] = priceArr.reduce((sum, price) => sum + price, 0);
@@ -71,7 +80,7 @@ remissionRouter.put("/by-id/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { payment_method, products, user_updated, observation } = req.body;
-    const updateFormat = new Date()
+    const updateFormat = subtractHours(new Date(), 5)
       .toISOString()
       .slice(0, 19)
       .replace("T", " ");
@@ -102,7 +111,10 @@ remissionRouter.post("/", async (req, res) => {
       observation = null,
     } = req.body;
 
-    const date = new Date().toISOString().slice(0, 19).replace("T", " ");
+    const date = subtractHours(new Date(), 5)
+      .toISOString()
+      .slice(0, 19)
+      .replace("T", " ");
 
     const queryRemission = `INSERT INTO remission (code_product, identy_user, payment_method, created_at, user_creator, updated_at, user_updated, status, observation) VALUES ("${products}", "${identy}", ${payment_method}, "${date}", "${rol}", "${date}", "${rol}", 2, "${observation}")`;
 
@@ -126,13 +138,16 @@ remissionRouter.put("/cancel-id/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { rol } = req.body;
-    const date = new Date().toISOString().slice(0, 19).replace("T", " ");
+    const date = subtractHours(new Date(), 5)
+      .toISOString()
+      .slice(0, 19)
+      .replace("T", " ");
+
     const queryDelete = `UPDATE remission SET status=3, user_updated="${rol}", updated_at="${date}", code_product="", payment_method=NULL, observation=NULL WHERE id=${id}`;
 
     const data = await db.handleQuery(queryDelete);
 
     utils.sucessResponse(res, data, "success");
-
   } catch (e) {
     console.log(e);
   }
@@ -145,5 +160,11 @@ const handleCreateRemission = async (queryRemission, res) => {
 
   utils.sucessResponse(res, data, "success");
 };
+
+function subtractHours(date, hours) {
+  date.setHours(date.getHours() - hours);
+
+  return date;
+}
 
 module.exports = remissionRouter;

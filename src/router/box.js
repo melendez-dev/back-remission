@@ -20,7 +20,7 @@ boxRouter.get("/:date", async (req, res) => {
 boxRouter.post("/open", async (req, res) => {
   try {
     const { opening, status, user_creator } = req.body;
-    const date = new Date().toISOString().slice(0, 19).replace("T", " ");
+    const date = subtractHours(new Date(), 5).toISOString().slice(0, 19).replace("T", " ")
 
     const queryCreateBox = `INSERT INTO box (opening, ending, total_diff, user_creator, user_finished, created_at, updated_at, status) VALUES (${opening}, NULL, NULL, "${user_creator}", NULL, "${date}", "${date}", ${status})`;
 
@@ -35,7 +35,7 @@ boxRouter.put("/to-close/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { ending, total_diff, user_finished } = req.body;
-    const date = new Date().toISOString().slice(0, 19).replace("T", " ");
+    const date = subtractHours(new Date(), 5).toISOString().slice(0, 19).replace("T", " ")
     const queryUpdated = `UPDATE box SET ending=${ending}, total_diff=${total_diff}, user_finished="${user_finished}", status=0, updated_at="${date}" WHERE id=${id}`;
     const data = await db.handleQuery(queryUpdated);
     utils.sucessResponse(res, data, "success");
@@ -61,7 +61,7 @@ boxRouter.put("/:id", async (req, res) => {
       }
     }
 
-    const date = new Date().toISOString().slice(0, 19).replace("T", " ");
+    const date = subtractHours(new Date(), 5).toISOString().slice(0, 19).replace("T", " ")
     const queryUpdated = `UPDATE box SET opening=${
       opening + priceMovement
     }, user_creator="${user_creator}", ending=NULL, total_diff=NULL, user_finished=NULL, status=${status}, updated_at="${date}" WHERE id=${id}`;
@@ -71,5 +71,11 @@ boxRouter.put("/:id", async (req, res) => {
     utils.errorReponse(res, 500, "Error en la conexión a la base de datos");
   }
 });
+
+function subtractHours(date, hours) {
+  date.setHours(date.getHours() - hours);
+
+  return date;
+}
 
 module.exports = boxRouter;
