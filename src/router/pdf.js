@@ -142,6 +142,7 @@ const getInfoBoxAndItsMovement = async (startDate, endDate, req) => {
   };
 
   const queryGetBoxByDate = `SELECT * FROM box WHERE DATE(created_at) BETWEEN STR_TO_DATE("${startDate}", '%Y-%m-%d') AND STR_TO_DATE("${endDate}", '%Y-%m-%d');`;
+
   const dataGetBoxByDate = await db.handleQuery(queryGetBoxByDate);
 
   let arrayData = [];
@@ -154,13 +155,14 @@ const getInfoBoxAndItsMovement = async (startDate, endDate, req) => {
     "Tarjeta",
   ];
 
-  let nameMovement = ["Ingreso", "Egreso"];
+  let nameMovement = ["Ingreso", "Egreso"]; // name of movement
 
-  if (Array?.isArray(dataGetBoxByDate) && dataGetBoxByDate?.length > 0) {
+  // if exists one o more box
+  if (Array?.isArray(dataGetBoxByDate) && dataGetBoxByDate?.length > 0) { 
     for (const dataBox of dataGetBoxByDate) {
       if (dataBox?.id) {
         const queryBoxMovement = `SELECT * FROM box_movement WHERE id_box=${dataBox?.id}`;
-        const dataBoxMovements = await db.handleQuery(queryBoxMovement);
+        const dataBoxMovements = await db.handleQuery(queryBoxMovement); // information about movements
 
         dataBox["created_at"] = dataBox["created_at"].substring(0, 10); // format timestamp
 
@@ -179,7 +181,8 @@ const getInfoBoxAndItsMovement = async (startDate, endDate, req) => {
           style: "currency",
           currency: "COP",
         });
-
+        
+        // if the box has movements
         if (Array.isArray(dataBoxMovements) && dataBoxMovements?.length > 0) {
           for (const dataMovement of dataBoxMovements) {
             dataMovement["price"] = dataMovement["price"].toLocaleString(
