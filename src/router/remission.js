@@ -10,7 +10,7 @@ const remissionRouter = express.Router();
 remissionRouter.get("/", async (req, res) => {
   try {
     const { page = 1, item = 5, filter = "", status } = req.query;
-    const countQuery = `SELECT COUNT(*) as count FROM remission WHERE (identy_user LIKE "${filter}%" OR code_product LIKE "%${filter}%") AND status IN (${status
+    const countQuery = `SELECT COUNT(*) as count FROM remission WHERE (identy_user LIKE "${filter}%") AND status IN (${status
       .split(",")
       .join(",")})`;
 
@@ -23,28 +23,30 @@ remissionRouter.get("/", async (req, res) => {
     const offset = (page - 1) * item; // offset
 
     // normal query (code product, name, identy, date) filter
-    let queryLimitOffset = `SELECT remission.id, remission.code_product, remission.identy_user, remission.payment_method, remission.created_at, remission.user_creator, remission.updated_at, remission.status, remission.observation, user.name FROM remission JOIN user ON remission.identy_user = user.identy WHERE (remission.identy_user LIKE "${filter}%" OR remission.code_product LIKE "%${filter}%" OR user.name LIKE "${filter}%" OR remission.created_at LIKE "${filter}%") AND status IN (${status
+    let queryLimitOffset = `SELECT remission.id, remission.identy_user, remission.payment_method, remission.created_at, remission.user_creator, remission.updated_at, remission.status, remission.observation, user.name FROM remission JOIN user ON remission.identy_user = user.identy WHERE (remission.identy_user LIKE "${filter}%" OR user.name LIKE "${filter}%" OR remission.created_at LIKE "${filter}%") AND status IN (${status
       .split(",")
       .join(",")}) ORDER BY remission.id DESC LIMIT ${item} offset ${offset}`;
 
     // match for id filter
     if (filter.startsWith("id-")) {
       const id = parseInt(filter.substring(3));
-      queryLimitOffset = `SELECT remission.id, remission.code_product, remission.identy_user, remission.payment_method, remission.created_at, remission.user_creator, remission.updated_at, remission.status, remission.observation, user.name FROM remission JOIN user ON remission.identy_user = user.identy WHERE remission.id=${id} AND status IN (${status
+      queryLimitOffset = `SELECT remission.id, remission.identy_user, remission.payment_method, remission.created_at, remission.user_creator, remission.updated_at, remission.status, remission.observation, user.name FROM remission JOIN user ON remission.identy_user = user.identy WHERE remission.id=${id} AND status IN (${status
         .split(",")
         .join(",")}) ORDER BY remission.id DESC LIMIT ${item} offset ${offset}`;
     }
 
     const data = await db.handleQuery(queryLimitOffset);
 
-    let priceArr = [];
     for (let obj of data) {
-      for (let product of obj.code_product.split(",")) {
-        let query = `SELECT price FROM product WHERE code=${product}`;
-        let dataPrice = await db.handleQuery(query);
-        priceArr.push(dataPrice[0]?.price);
+      const queryProducts = `SELECT * FROM remission_product WHERE remission_id=${obj.id}`;
+      const dataRemissionProducts = await db.handleQuery(queryProducts);
+      let arrPrice = [];
+      for (let objData of dataRemissionProducts) {
+        if (objData?.remission_id === obj.id) {
+          arrPrice.push(objData.price * objData.amount);
+        }
       }
-      obj["total"] = priceArr.reduce((sum, price) => sum + price, 0);
+      obj["total"] = arrPrice.reduce((acc, curr) => acc + curr, 0);
     }
 
     // data from pagination
@@ -68,8 +70,15 @@ remissionRouter.get("/", async (req, res) => {
 remissionRouter.get("/by-id/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const queryGet = `SELECT * FROM remission WHERE id=${id}`;
+    const queryGet = `SELECT * FROM remission WHERE id=${id}`; // get info from remission
+    const queryGetProducts = `SELECT * FROM product inner join remission_product on product.code = remission_product.product_code WHERE remission_product.remission_id = ${id}`;
+
+    // data
     const data = await db.handleQuery(queryGet);
+    const dataProducts = await db.handleQuery(queryGetProducts);
+
+    data[0]["products"] = dataProducts;
+
     utils.sucessResponse(res, data, "success");
   } catch (e) {
     console.log(e);
@@ -84,9 +93,28 @@ remissionRouter.put("/by-id/:id", async (req, res) => {
       .toISOString()
       .slice(0, 19)
       .replace("T", " ");
-    const queryUpdate = `UPDATE remission SET payment_method=${payment_method}, code_product="${products}", user_updated="${user_updated}", updated_at="${updateFormat}", observation="${observation}", status=1 WHERE id=${id}`;
+    const queryUpdate = `UPDATE remission SET payment_method=${payment_method}, user_updated="${user_updated}", updated_at="${updateFormat}", observation="${observation}", status=1 WHERE id=${id}`;
 
     const data = await db.handleQuery(queryUpdate);
+
+    // for the products by remission is complicated, is better
+    //clean all the products and insert them again
+    // to avoid issues with multiple records
+    await db.handleQuery(
+      `DELETE FROM remission_product WHERE remission_id=${id}`
+    ); // clear the records for
+    
+    // now insert the records
+    for (let elementProduct of products) {
+      const code = elementProduct?.product?.code;
+      const amount = elementProduct?.amount;
+      const price = elementProduct?.price;
+
+      const queryInsertProducts = `INSERT INTO remission_product (remission_id, product_code, amount, price) VALUES (${id}, "${code}", ${amount}, ${price})`;
+
+      await db.handleQuery(queryInsertProducts);
+    }
+
     utils.sucessResponse(res, data, "success");
   } catch (e) {
     console.log(e);
@@ -116,7 +144,7 @@ remissionRouter.post("/", async (req, res) => {
       .slice(0, 19)
       .replace("T", " ");
 
-    const queryRemission = `INSERT INTO remission (code_product, identy_user, payment_method, created_at, user_creator, updated_at, user_updated, status, observation) VALUES ("${products}", "${identy}", ${payment_method}, "${date}", "${rol}", "${date}", "${rol}", 2, "${observation}")`;
+    const queryRemission = `INSERT INTO remission (identy_user, payment_method, created_at, user_creator, updated_at, user_updated, status, observation) VALUES ("${identy}", ${payment_method}, "${date}", "${rol}", "${date}", "${rol}", 2, "${observation}")`;
 
     if (is_new) {
       // the user is new then create
@@ -127,6 +155,22 @@ remissionRouter.post("/", async (req, res) => {
       handleCreateRemission(queryRemission, res);
     } else {
       handleCreateRemission(queryRemission, res);
+    }
+
+    // after the remission is created we need to create the products for that remission
+
+    const querySelectLastRemision = `SELECT id FROM remission ORDER BY id DESC LIMIT 1`;
+    const lastRemissionCreated = await db.handleQuery(querySelectLastRemision);
+
+    for (let elementProduct of products) {
+      const id = lastRemissionCreated[0]?.id;
+      const code = elementProduct?.product?.code;
+      const amount = elementProduct?.amount;
+      const price = elementProduct?.price;
+
+      const queryInsertProducts = `INSERT INTO remission_product (remission_id, product_code, amount, price) VALUES (${id}, "${code}", ${amount}, ${price})`;
+
+      await db.handleQuery(queryInsertProducts);
     }
   } catch (e) {
     utils.errorReponse(res, 500, "Error en la conexión a la base de datos");
@@ -143,9 +187,13 @@ remissionRouter.put("/cancel-id/:id", async (req, res) => {
       .slice(0, 19)
       .replace("T", " ");
 
-    const queryDelete = `UPDATE remission SET status=3, user_updated="${rol}", updated_at="${date}", code_product="", payment_method=NULL, observation=NULL WHERE id=${id}`;
+    const queryDelete = `UPDATE remission SET status=3, user_updated="${rol}", updated_at="${date}", payment_method=NULL, observation=NULL WHERE id=${id}`;
 
+    // execute the query to update the remisison
     const data = await db.handleQuery(queryDelete);
+    await db.handleQuery(
+      `DELETE FROM remission_product WHERE remission_id=${id}`
+    ); // clear the records for cancellation
 
     utils.sucessResponse(res, data, "success");
   } catch (e) {
