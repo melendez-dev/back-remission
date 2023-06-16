@@ -103,7 +103,7 @@ remissionRouter.put("/by-id/:id", async (req, res) => {
     await db.handleQuery(
       `DELETE FROM remission_product WHERE remission_id=${id}`
     ); // clear the records for
-    
+
     // now insert the records
     for (let elementProduct of products) {
       const code = elementProduct?.product?.code;
@@ -150,7 +150,7 @@ remissionRouter.post("/", async (req, res) => {
       // the user is new then create
       const queryUser = `INSERT INTO user (name, type_identy, identy, addres, city, phone, created_at, created_by) VALUES ("${name}", "${type_identy}", "${identy}", "${addres}", "${city}", "${phone}", "${date}", "${rol}")`;
 
-      await db.handleQuery(queryUser);
+      await db.handleQuery(queryUser); // create the user if is new
 
       handleCreateRemission(queryRemission, res);
     } else {
@@ -172,8 +172,11 @@ remissionRouter.post("/", async (req, res) => {
 
       await db.handleQuery(queryInsertProducts);
     }
+    // after created all resoponse with okay
+    utils.sucessResponse(res, [], "success");
   } catch (e) {
-    utils.errorReponse(res, 500, "Error en la conexión a la base de datos");
+    console.log(e);
+    //utils.errorReponse(res, 500, "Error en la conexión a la base de datos");
   }
 });
 
@@ -204,9 +207,7 @@ remissionRouter.put("/cancel-id/:id", async (req, res) => {
 // helpers
 
 const handleCreateRemission = async (queryRemission, res) => {
-  const data = await db.handleQuery(queryRemission);
-
-  utils.sucessResponse(res, data, "success");
+  await db.handleQuery(queryRemission);
 };
 
 function subtractHours(date, hours) {
