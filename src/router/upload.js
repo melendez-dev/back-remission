@@ -19,10 +19,10 @@ uploadRouter.post("/users/:rol", upload.single("file"), async (req, res) => {
     const promises = [];
 
     for (const item of rows) {
-      const queryIdentifier = `SELECT * FROM user WHERE identy=${item[2]}`;
+      const queryIdentifier = `SELECT * FROM user WHERE identy="${item[2]}" AND type_identy="${item[1]}"`;
       const result = await db.handleQuery(queryIdentifier);
 
-      if (!result.length) {
+      if (Boolean(!result.length)) {
         const date = subtractHours(new Date(), 5)
           .toISOString()
           .slice(0, 19)
@@ -30,7 +30,7 @@ uploadRouter.post("/users/:rol", upload.single("file"), async (req, res) => {
 
         const queryCreate = `
           INSERT INTO user (name, type_identy, identy, addres, city, phone, created_at, created_by) 
-          VALUES ("${item[0]}", "${item[1]}", ${item[2]}, "${item[6]}", "${item[7]}", "${item[8]}", "${date}", "${rol}")
+          VALUES ("${item[0]}", "${item[1]}", "${item[2]}", "${item[6]}", "${item[7]}", "${item[8]}", "${date}", "${rol}")
         `;
 
         promises.push(db.handleQuery(queryCreate));
@@ -60,7 +60,7 @@ uploadRouter.post("/products/:rol", upload.single("file"), async (req, res) => {
       const queryIdentifier = `SELECT * FROM product WHERE code="${item[1]}" AND status=1`;
       const result = await db.handleQuery(queryIdentifier);
 
-      if (!result.length) {
+      if (Boolean(!result.length)) {
         const date = subtractHours(new Date(), 5)
           .toISOString()
           .slice(0, 19)
