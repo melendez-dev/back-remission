@@ -11,71 +11,75 @@ const readXlsxFile = require("read-excel-file/node");
 
 const upload = multer({ dest: "uploads/" });
 
-uploadRouter.post("/users/:rol", upload.single("file"), (req, res) => {
+uploadRouter.post("/users/:rol", upload.single("file"), async (req, res) => {
   try {
     const { rol } = req.params;
-    readXlsxFile(req.file.path)
-      .then((rows) => {
-        rows.forEach(async (item) => {
-          const queryIdentifier = `SELECT * FROM user WHERE identy=${item[2]}`;
+    const rows = await readXlsxFile(req.file.path);
 
-          const result = await db.handleQuery(queryIdentifier);
-          if (!result.length) {
-            const date = subtractHours(new Date(), 5)
-              .toISOString()
-              .slice(0, 19)
-              .replace("T", " ");
-            const queryCreate = `
-                  INSERT INTO user (name, type_identy, identy, addres, city, phone, created_at, created_by) 
-                  VALUES ("${item[0]}", "${item[1]}", ${item[2]}, "${item[6]}", "${item[7]}", "${item[8]}", "${date}", "${rol}")
-                `;
+    const promises = [];
 
-            await db.handleQuery(queryCreate);
-          }
-        });
-      })
-      .then(() => {
-        res.json({
-          message: "se ha guardo correctamente",
-          data: [],
-          status: 200,
-        });
-      });
+    for (const item of rows) {
+      const queryIdentifier = `SELECT * FROM user WHERE identy=${item[2]}`;
+      const result = await db.handleQuery(queryIdentifier);
+
+      if (!result.length) {
+        const date = subtractHours(new Date(), 5)
+          .toISOString()
+          .slice(0, 19)
+          .replace("T", " ");
+
+        const queryCreate = `
+          INSERT INTO user (name, type_identy, identy, addres, city, phone, created_at, created_by) 
+          VALUES ("${item[0]}", "${item[1]}", ${item[2]}, "${item[6]}", "${item[7]}", "${item[8]}", "${date}", "${rol}")
+        `;
+
+        promises.push(db.handleQuery(queryCreate));
+      }
+    }
+
+    await Promise.all(promises);
+
+    res.json({
+      message: "se ha guardado correctamente",
+      data: [],
+      status: 200,
+    });
   } catch (e) {
     utils.errorReponse(res, 500, e);
   }
 });
 
-uploadRouter.post("/products/:rol", upload.single("file"), (req, res) => {
+uploadRouter.post("/products/:rol", upload.single("file"), async (req, res) => {
   try {
     const { rol } = req.params;
-    readXlsxFile(req.file.path)
-      .then((rows) => {
-        rows.forEach(async (item) => {
-          const queryIdentifier = `SELECT * FROM product WHERE code="${item[1]}" AND status=1`;
+    const rows = await readXlsxFile(req.file.path);
 
-          const result = await db.handleQuery(queryIdentifier);
-          if (!result.length) {
-            const date = subtractHours(new Date(), 5)
-              .toISOString()
-              .slice(0, 19)
-              .replace("T", " ");
+    const promises = [];
 
-            const queryCreate = `
-                  INSERT INTO product (name, code, price, created_at, updated_at, status, updated_by) 
-                  VALUES ("${item[2]}", "${item[1]}", ${item[11]}, "${date}", "${date}", 1, "${rol}")
-                `;
-            await db.handleQuery(queryCreate);
-          }
-        });
-      })
-      .then(() => {
-        res.json({
-          message: "se ha guardo correctamente",
-          data: [],
-          status: 200,
-        });
-      });
+    for (const item of rows) {
+      const queryIdentifier = `SELECT * FROM product WHERE code="${item[1]}" AND status=1`;
+      const result = await db.handleQuery(queryIdentifier);
+
+      if (!result.length) {
+        const date = subtractHours(new Date(), 5)
+          .toISOString()
+          .slice(0, 19)
+          .replace("T", " ");
+
+        const queryCreate = `INSERT INTO product (name, code, price, created_at, updated_at, status, updated_by) VALUES ('${item[2]}', "${item[1]}", ${item[11]}, "${date}", "${date}", 1, "${rol}")`;
+        if (!queryCreate.includes("null")) {
+          promises.push(db.handleQuery(queryCreate));
+        }
+      }
+    }
+
+    await Promise.all(promises);
+
+    res.json({
+      message: "Se ha guardado correctamente",
+      data: [],
+      status: 200,
+    });
   } catch (e) {
     utils.errorReponse(res, 500, e);
   }
