@@ -23,14 +23,14 @@ remissionRouter.get("/", async (req, res) => {
     const offset = (page - 1) * item; // offset
 
     // normal query (code product, name, identy, date) filter
-    let queryLimitOffset = `SELECT remission.id, remission.identy_user, remission.payment_method, remission.created_at, remission.user_creator, remission.updated_at, remission.status, remission.observation, user.name FROM remission JOIN user ON remission.identy_user = user.identy WHERE (remission.identy_user LIKE "${filter}%" OR user.name LIKE "${filter}%" OR remission.created_at LIKE "${filter}%") AND status IN (${status
+    let queryLimitOffset = `SELECT remission.id, remission.identy_user, remission.payment_method, remission.created_at, remission.user_creator, remission.updated_at, remission.status, remission.observation, user.name FROM remission JOIN user ON (remission.identy_user = user.identy AND remission.type_identy_user = user.type_identy) WHERE (remission.identy_user LIKE "${filter}%" OR user.name LIKE "${filter}%" OR remission.created_at LIKE "${filter}%") AND status IN (${status
       .split(",")
       .join(",")}) ORDER BY remission.id DESC LIMIT ${item} offset ${offset}`;
 
     // match for id filter
     if (filter.startsWith("id-")) {
       const id = parseInt(filter.substring(3));
-      queryLimitOffset = `SELECT remission.id, remission.identy_user, remission.payment_method, remission.created_at, remission.user_creator, remission.updated_at, remission.status, remission.observation, user.name FROM remission JOIN user ON remission.identy_user = user.identy WHERE remission.id=${id} AND status IN (${status
+      queryLimitOffset = `SELECT remission.id, remission.identy_user, remission.payment_method, remission.created_at, remission.user_creator, remission.updated_at, remission.status, remission.observation, user.name FROM remission JOIN user ON (remission.identy_user = user.identy AND remission.type_identy_user = user.type_identy) WHERE remission.id=${id} AND status IN (${status
         .split(",")
         .join(",")}) ORDER BY remission.id DESC LIMIT ${item} offset ${offset}`;
     }
@@ -144,7 +144,7 @@ remissionRouter.post("/", async (req, res) => {
       .slice(0, 19)
       .replace("T", " ");
 
-    const queryRemission = `INSERT INTO remission (identy_user, payment_method, created_at, user_creator, updated_at, user_updated, status, observation) VALUES ("${identy}", ${payment_method}, "${date}", "${rol}", "${date}", "${rol}", 2, "${observation}")`;
+    const queryRemission = `INSERT INTO remission (identy_user, type_identy_user, payment_method, created_at, user_creator, updated_at, user_updated, status, observation) VALUES ("${identy}", "${type_identy}", ${payment_method}, "${date}", "${rol}", "${date}", "${rol}", 2, "${observation}")`;
 
     if (is_new) {
       // the user is new then create
