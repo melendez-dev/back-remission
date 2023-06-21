@@ -105,17 +105,22 @@ remissionRouter.put("/by-id/:id", async (req, res) => {
     ); // clear the records for
 
     // now insert the records
-    for (let elementProduct of products) {
-      const code = elementProduct?.product?.code;
-      const amount = elementProduct?.amount;
-      const price = elementProduct?.price;
+    // crete promise to insert the records
+    const promiseInsert = new Promise(async (resolve, reject) => {
+      for (let elementProduct of products) {
+        const code = elementProduct?.product?.code;
+        const amount = elementProduct?.amount;
+        const price = elementProduct?.price;
 
-      const queryInsertProducts = `INSERT INTO remission_product (remission_id, product_code, amount, price) VALUES (${id}, "${code}", ${amount}, ${price})`;
+        const queryInsertProducts = `INSERT INTO remission_product (remission_id, product_code, amount, price) VALUES (${id}, "${code}", ${amount}, ${price})`;
 
-      await db.handleQuery(queryInsertProducts);
-    }
+        await db.handleQuery(queryInsertProducts);
 
-    utils.sucessResponse(res, data, "success");
+        resolve("success");
+      }
+    });
+
+    promiseInsert.then(() => utils.sucessResponse(res, data, "success"));
   } catch (e) {
     console.log(e);
   }
@@ -162,21 +167,25 @@ remissionRouter.post("/", async (req, res) => {
     const querySelectLastRemision = `SELECT id FROM remission ORDER BY id DESC LIMIT 1`;
     const lastRemissionCreated = await db.handleQuery(querySelectLastRemision);
 
-    for (let elementProduct of products) {
-      const id = lastRemissionCreated[0]?.id;
-      const code = elementProduct?.product?.code;
-      const amount = elementProduct?.amount;
-      const price = elementProduct?.price;
+    const promiseProducts = new Promise(async (resolve, reject) => {
+      for (let elementProduct of products) {
+        const id = lastRemissionCreated[0]?.id;
+        const code = elementProduct?.product?.code;
+        const amount = elementProduct?.amount;
+        const price = elementProduct?.price;
 
-      const queryInsertProducts = `INSERT INTO remission_product (remission_id, product_code, amount, price) VALUES (${id}, "${code}", ${amount}, ${price})`;
+        const queryInsertProducts = `INSERT INTO remission_product (remission_id, product_code, amount, price) VALUES (${id}, "${code}", ${amount}, ${price})`;
 
-      await db.handleQuery(queryInsertProducts);
-    }
+        await db.handleQuery(queryInsertProducts);
+      }
+
+      resolve("success");
+    });
+
     // after created all resoponse with okay
-    utils.sucessResponse(res, [], "success");
+    promiseProducts.then(() => utils.sucessResponse(res, [], "success"));
   } catch (e) {
     console.log(e);
-    //utils.errorReponse(res, 500, "Error en la conexión a la base de datos");
   }
 });
 
