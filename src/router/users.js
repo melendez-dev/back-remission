@@ -56,9 +56,9 @@ usersRouter.get("/by_document", async (req, res) => {
 
 usersRouter.get("/by_document_only", async (req, res) => {
   try {
-    const { identy } = req.query;
+    const { identy, type } = req.query;
     if (identy) {
-      const queryByDocument = `SELECT * FROM user WHERE identy = "${identy}"`;
+      const queryByDocument = `SELECT * FROM user WHERE identy = "${identy}" AND type_identy=${type}`;
       const data = await db.handleQuery(queryByDocument);
       utils.sucessResponse(res, data, "success");
     }
