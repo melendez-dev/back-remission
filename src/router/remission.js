@@ -164,26 +164,37 @@ remissionRouter.post("/", async (req, res) => {
 
     // after the remission is created we need to create the products for that remission
 
-    const querySelectLastRemision = `SELECT id FROM remission ORDER BY id DESC LIMIT 1`;
-    const lastRemissionCreated = await db.handleQuery(querySelectLastRemision);
-
-    const promiseProducts = new Promise(async (resolve, reject) => {
-      for (let elementProduct of products) {
+    const promiseGetLastRemission = new Promise(async (resolve, reject) => {
+      const querySelectLastRemision = `SELECT id FROM remission ORDER BY id DESC LIMIT 1`;
+      const lastRemissionCreated = await db.handleQuery(
+        querySelectLastRemision
+      );
+      try {
         const id = lastRemissionCreated[0]?.id;
-        const code = elementProduct?.product?.code;
-        const amount = elementProduct?.amount;
-        const price = elementProduct?.price;
-
-        const queryInsertProducts = `INSERT INTO remission_product (remission_id, product_code, amount, price) VALUES (${id}, "${code}", ${amount}, ${price})`;
-
-        await db.handleQuery(queryInsertProducts);
+        if (id) {
+          resolve(id);
+        }
+      } catch (e) {
+        reject(e);
       }
-
-      resolve("success");
     });
 
     // after created all resoponse with okay
-    promiseProducts.then(() => utils.sucessResponse(res, [], "success"));
+    promiseGetLastRemission
+      .then(async (id) => {
+        for (let elementProduct of products) {
+          const code = elementProduct?.product?.code;
+          const amount = elementProduct?.amount;
+          const price = elementProduct?.price;
+
+          const queryInsertProducts = `INSERT INTO remission_product (remission_id, product_code, amount, price) VALUES (${id}, "${code}", ${amount}, ${price})`;
+          await db.handleQuery(queryInsertProducts);
+        }
+      })
+      .then(() => {
+        utils.sucessResponse(res, [], "success");
+      })
+      .catch((error) => console.error(error));
   } catch (e) {
     console.log(e);
   }
