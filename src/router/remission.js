@@ -151,52 +151,35 @@ remissionRouter.post("/", async (req, res) => {
 
     const queryRemission = `INSERT INTO remission (identy_user, type_identy_user, payment_method, created_at, user_creator, updated_at, user_updated, status, observation) VALUES ("${identy}", "${type_identy}", ${payment_method}, "${date}", "${rol}", "${date}", "${rol}", 2, "${observation}")`;
 
-    if (is_new) {
-      // the user is new then create
-      const queryUser = `INSERT INTO user (name, type_identy, identy, addres, city, phone, created_at, created_by) VALUES ("${name}", "${type_identy}", "${identy}", "${addres}", "${city}", "${phone}", "${date}", "${rol}")`;
-
-      await db.handleQuery(queryUser); // create the user if is new
-
-      handleCreateRemission(queryRemission, res);
-    } else {
-      handleCreateRemission(queryRemission, res);
-    }
-
-    // after the remission is created we need to create the products for that remission
-
-    const promiseGetLastRemission = new Promise(async (resolve, reject) => {
-      const querySelectLastRemision = `SELECT id FROM remission ORDER BY id DESC LIMIT 1`;
-      const lastRemissionCreated = await db.handleQuery(
-        querySelectLastRemision
-      );
+    const promiseHandleCreated = new Promise(async (resolve, reject) => {
       try {
-        const id = lastRemissionCreated[0]?.id;
-        if (id) {
-          resolve(id);
-        }
+        const queryUser = `INSERT INTO user (name, type_identy, identy, addres, city, phone, created_at, created_by) VALUES ("${name}", "${type_identy}", "${identy}", "${addres}", "${city}", "${phone}", "${date}", "${rol}")`;
+        is_new && (await db.handleQuery(queryUser));
+        const data = await handleCreateRemission(queryRemission, res);
+        resolve(data);
       } catch (e) {
         reject(e);
+        console.error(e);
       }
     });
 
-    // after created all resoponse with okay
-    promiseGetLastRemission
-      .then(async (id) => {
+    promiseHandleCreated
+      .then(async (data) => {
+        console.log({data, products}) // listing logs with journlctl in server
         for (let elementProduct of products) {
           const code = elementProduct?.product?.code;
           const amount = elementProduct?.amount;
           const price = elementProduct?.price;
-
-          const queryInsertProducts = `INSERT INTO remission_product (remission_id, product_code, amount, price) VALUES (${id}, "${code}", ${amount}, ${price})`;
+          const queryInsertProducts = `INSERT INTO remission_product (remission_id, product_code, amount, price) VALUES (${data.insertId}, "${code}", ${amount}, ${price})`;
           await db.handleQuery(queryInsertProducts);
         }
       })
       .then(() => {
         utils.sucessResponse(res, [], "success");
       })
-      .catch((error) => console.error(error));
+      .catch((e) => console.error(e));
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 });
 
@@ -227,7 +210,7 @@ remissionRouter.put("/cancel-id/:id", async (req, res) => {
 // helpers
 
 const handleCreateRemission = async (queryRemission, res) => {
-  await db.handleQuery(queryRemission);
+  return await db.handleQuery(queryRemission);
 };
 
 function subtractHours(date, hours) {
